@@ -1,0 +1,26 @@
+---
+- hosts: all
+  sudo: yes
+  tasks:
+    - name: install apache2
+      apt: name=apache2 state=latest
+      notify:
+        - restart apache2
+    - name: modify docroot
+      lineinfile: dest=/etc/apache2/sites-available/000-default.conf regexp="^\tDocumentRoot /var/www/html" line="{{'\t'}}DocumentRoot /web" state=present
+      notify:
+        - restart apache2
+    - name: modify directory
+      lineinfile: dest=/etc/apache2/apache2.conf regexp="^<Directory /var/www/>" line="<Directory /web>" state=present
+      notify:
+        - restart apache2
+    - name: create file
+      file: path=/web/index.php state=touch
+    - stat: path=/web/index.php
+      register: file_path
+    - copy: content="192.168.33.20" dest="/web/index.php"
+      when: file_path.stat.exists == true
+
+  handlers:
+    - name: restart apache2
+      service: name=apache2 state=restarted
