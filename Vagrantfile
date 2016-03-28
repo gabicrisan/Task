@@ -14,7 +14,7 @@ Vagrant.configure(2) do |config|
   end
 
   config.vm.define "modified" do |modified|
-    modified.vm.box="ubuntu/trusty64"
+    modified.vm.box="nrel/CentOS-6.5-x86_64"
     modified.vm.hostname="modified-box"
     modified.vm.network "private_network", ip: "192.168.33.20"
     modified.vm.provider "virtualbox" do |vb|
@@ -29,16 +29,15 @@ Vagrant.configure(2) do |config|
       end                
         vb.customize [
           'storageattach', :id, 
-          '--storagectl', 'SATAController', 
+          '--storagectl', 'IDE Controller', 
           '--port', 1, '--device', 0, 
           '--type', 'hdd', '--medium', 
           file_to_disk
-          ]  
+          ]
+    end  
     modified.vm.provision :shell, path: "mount.sh"
-    end
     modified.vm.provision :ansible do |ansible|
       ansible.playbook="box.yml" 
     end
   end
-
 end

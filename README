@@ -1,0 +1,1 @@
+This provides a basic vagrant environment, a modified base env and a docker base end provisioned with ansible
